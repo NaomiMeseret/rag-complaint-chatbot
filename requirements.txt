@@ -1,0 +1,8 @@
+pandas
+matplotlib
+seaborn
+numpy
+sentence-transformers
+chromadb
+scikit-learn
+tqdm
