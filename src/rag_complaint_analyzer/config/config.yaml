@@ -1,0 +1,46 @@
+# Configuration file for RAG Complaint Analyzer
+
+# Data paths
+data:
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+  filtered_file: "data/processed/filtered_complaints.csv"
+  sample_file: "data/processed/stratified_sample.csv"
+  chunked_file: "data/processed/stratified_sample_chunked.csv"
+
+# Vector store configuration
+vector_store:
+  path: "vector_store"
+  collection_name: "complaints_sample"
+  persist: true
+
+# Text processing
+text_processing:
+  chunk_size: 500
+  chunk_overlap: 50
+
+# Sampling
+sampling:
+  sample_size: 12000
+  random_state: 42
+  stratify_by: "Product"
+
+# Embedding model
+embeddings:
+  model_name: "all-MiniLM-L6-v2"
+  batch_size: 64
+  device: "cpu" # "cuda" for GPU
+
+# Target products (case-sensitive)
+products:
+  - "Credit card"
+  - "Personal loan"
+  - "Savings account"
+  - "Money transfers"
+
+# Logging
+logging:
+  level: "INFO"
+  log_dir: "logs"
+  log_file: "complaint_analyzer.log"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
