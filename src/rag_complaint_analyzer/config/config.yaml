@@ -7,6 +7,7 @@ data:
   filtered_file: "data/processed/filtered_complaints.csv"
   sample_file: "data/processed/stratified_sample.csv"
   chunked_file: "data/processed/stratified_sample_chunked.csv"
+  embeddings_file: "data/raw/complaint_embeddings.parquet"
 
 # Vector store configuration
 vector_store:

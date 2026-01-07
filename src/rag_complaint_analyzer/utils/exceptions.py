@@ -30,3 +30,8 @@ class ChunkingError(DataProcessingError):
     """Raised when text chunking fails."""
     pass
 
+
+class RAGError(ComplaintAnalyzerError):
+    """Raised when RAG pipeline operations fail."""
+    pass
+
