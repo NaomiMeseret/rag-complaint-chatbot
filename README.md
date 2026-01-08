@@ -1,181 +1,136 @@
 # 🤖 Intelligent Complaint Analysis for Financial Services
 
-> A **RAG-Powered Chatbot** that transforms customer complaints into actionable insights for financial services teams.
-
-## 📋 Overview
-
-CrediTrust Financial receives thousands of customer complaints monthly across multiple financial products. This project builds an **AI-powered chatbot** that enables Product Managers, Support Teams, and Compliance Officers to quickly identify trends, extract insights, and answer questions about customer feedback—turning raw complaint data into strategic business intelligence.
-
-### 🎯 Key Objectives
-
-- ⚡ **Reduce analysis time** from days to minutes for identifying complaint trends
-- 👥 **Empower non-technical teams** to query complaint data without data analysts
-- 🔮 **Enable proactive problem-solving** by identifying issues before they escalate
+> **A Retrieval-Augmented Generation (RAG) Chatbot for deep analysis of CFPB consumer complaints at CrediTrust Financial.**
 
 ---
 
-## 💡 Project Idea
+## 🌟 Project Overview
 
-This system uses **Retrieval-Augmented Generation (RAG)** to answer questions about customer complaints. Here's how it works:
+CrediTrust Financial’s customer support, product, and compliance teams face a mountain of complaint data. This project delivers a powerful **RAG-powered chatbot** that enables internal users to quickly surface key narratives, trends, and actionable insights from millions of complaints — using only natural language queries.
 
-1. **📊 Data Processing**: Clean and preprocess complaint narratives from the CFPB dataset
-2. **✂️ Text Chunking**: Break long complaint narratives into smaller, searchable chunks
-3. **🧠 Embedding Generation**: Convert text chunks into vector embeddings using semantic models
-4. **🔍 Vector Search**: Store embeddings in a vector database (ChromaDB) for fast semantic search
-5. **💬 Question Answering**: When users ask questions, the system:
-   - Retrieves the most relevant complaint chunks using semantic similarity
-   - Passes retrieved context to a language model
-   - Generates concise, evidence-backed answers
+### Key Features
 
-### 📦 Products Analyzed
-
-- 💳 Credit Cards
-- 💰 Personal Loans
-- 🏦 Savings Accounts
-- 💸 Money Transfers
+- **Full RAG Pipeline:** Semantic search of pre-embedded complaints using state-of-the-art Sentence Transformers, plus answer generation with an LLM.
+- **User-Friendly Chatbot:** Gradio-powered web interface for ad-hoc querying.
+- **Source Transparency:** Display of supporting complaint excerpts and metadata for every answer.
+- **Modular & Extensible:** Production-style package structure, config management, and error handling.
+- **Evaluation Ready:** Practical metrics and qualitative feedback tools included.
 
 ---
 
-## 🛠️ Technology Stack
+## 🖼️ Product Screenshots
 
-- **Python 3.8+**
-- **Pandas & NumPy** - Data processing and analysis
-- **Sentence Transformers** - Text embeddings (`all-MiniLM-L6-v2`)
-- **ChromaDB** - Vector database for semantic search
-- **scikit-learn** - Stratified sampling
-- **Jupyter Notebooks** - EDA and development
+### 1. Welcome and Instructions
+
+![Gradio Chatbot Welcome](reports/images/gradio_initial_interface.png)
+
+### 2. Example Question: Credit Cards
+
+![Sample Question 1 - Credit Cards](reports/images/gradio_sample_question1.png)
+
+### 3. Example Question: Personal Loans
+
+![Sample Question 2 - Personal Loans](reports/images/gradio_sample_question2.png)
 
 ---
 
-## 📁 Project Structure
+## 🚀 How to Launch and Use the Chatbot
 
-```
-rag-complaint-chatbot/
-├── 📂 data/
-│   ├── raw/                    # Raw CFPB complaint dataset
-│   └── processed/              # Cleaned and filtered data
-├── 📂 vector_store/            # ChromaDB persistent vector store
-├── 📂 notebooks/
-│   ├── 01_task1_eda_preprocessing.ipynb
-│   └── 02_task2_chunk_embed_vectorstore.ipynb
-├── 📂 src/                     # Source code (for future tasks)
-├── 📂 tests/                   # Test scripts
-├── requirements.txt            # Python dependencies
-└── README.md                   # This file
+### 1. Setup
+
+```bash
+git clone <repository-url>
+cd rag-complaint-chatbot
+python3 -m venv venv
+source venv/bin/activate           # On Mac/Linux
+pip install -r requirements.txt
 ```
 
----
+### 2. Make Sure You Have the Prebuilt Embeddings
 
-## 🚀 Getting Started
+- Place the provided `complaint_embeddings.parquet` file in:
+  ```
+  data/raw/complaint_embeddings.parquet
+  ```
 
-### Prerequisites
+### 3. Run the Chatbot
 
-- Python 3.8 or higher
-- Virtual environment (recommended)
+```bash
+python app.py --embeddings data/raw/complaint_embeddings.parquet
+# or to choose a different port:
+python app.py --embeddings data/raw/complaint_embeddings.parquet --port 7861
+```
 
-### Installation
+- Open your browser to: [http://localhost:7861](http://localhost:7861) (or your custom port).
+- You should see the chatbot interface (see screenshots above).
 
-1. **Clone the repository**
+### 4. Ask Questions!
 
-   ```bash
-   git clone <repository-url>
-   cd rag-complaint-chatbot
-   ```
-
-2. **Create and activate a virtual environment**
-
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies**
-
-   ```bash
-   pip install --upgrade pip
-   pip install -r requirements.txt
-   ```
-
-4. **Download the CFPB complaint dataset**
-   - Place the dataset file in `data/raw/complaints.csv`
-   - The dataset should contain consumer complaint narratives from CFPB
+- Type questions like "Why are people unhappy with Credit Cards?" or "What are the main issues with Personal Loans?"
+- The bot will search, generate an answer, and show which complaint excerpts support its reply.
 
 ---
 
-## 📝 Tasks & Deliverables
+## ✨ What Makes This Project Stand Out?
 
-### ✅ Task 1: Exploratory Data Analysis & Preprocessing
-
-- Analyze complaint data structure and distributions
-- Filter complaints for target product categories
-- Clean and normalize complaint narratives
-- Generate visualizations and summary statistics
-
-**Output**: `data/filtered_complaints.csv`
-
-### ✅ Task 2: Text Chunking, Embedding & Vector Store Indexing
-
-- Create stratified sample (10K-15K complaints)
-- Implement text chunking strategy (500 chars, 50 overlap)
-- Generate embeddings using MiniLM-L6-v2
-- Index embeddings and metadata in ChromaDB
-
-**Output**: Persistent vector store in `vector_store/`
-
-### 🔄 Task 3-4: RAG Pipeline & User Interface (Future)
-
-- Build RAG query pipeline with LLM integration
-- Develop Gradio/Streamlit interface
-- Evaluate and optimize retrieval performance
+- **Real Business Context:** Directly tailored for customer concern analytics in the financial sector.
+- **End-to-End Flow:** From raw data -> EDA -> embeddings -> vector store -> chatbot interface.
+- **Transparent & Auditable:** Every answer links back to real complaint excerpts.
+- **Evaluation-Ready:** Benchmarked with curated queries, results available for review.
+- **Easy to Upgrade:** Swap in a larger language model, or expand the UI as needed.
 
 ---
 
-## 🔬 Key Design Decisions
+## 🔑 Key Technologies
 
-### Text Chunking
-
-- **Chunk Size**: 500 characters
-- **Overlap**: 50 characters
-- **Rationale**: Balances context preservation with embedding quality
-
-### Embedding Model
-
-- **Model**: `sentence-transformers/all-MiniLM-L6-v2`
-- **Dimensions**: 384
-- **Rationale**: Fast, accurate, and optimized for semantic search tasks
-
-### Vector Database
-
-- **Database**: ChromaDB
-- **Rationale**: Lightweight, persistent, and easy to integrate with Python
+- **Sentence Transformers:** Fast semantic chunk embedding (`all-MiniLM-L6-v2`)
+- **ChromaDB:** In-memory & persistent vector storage
+- **Gradio:** Chatbot interface with clear source displays
+- **HuggingFace Transformers:** For LLM-based answer generation
+- **Pandas, PyYAML, tqdm:** All standard for data and config management
 
 ---
 
-## 👥 Target Users
+## 📁 Project Structure at a Glance
 
-- **Product Managers** - Identify feature issues and user pain points
-- **Customer Support Teams** - Quickly understand common complaint patterns
-- **Compliance & Risk Teams** - Monitor regulatory and fraud signals
-- **Executives** - Gain visibility into emerging customer issues
-
----
-
-## 📊 Expected Outcomes
-
-By completing this project, teams will be able to:
-
-- Ask natural language questions like _"Why are customers unhappy with credit cards?"_
-- Receive synthesized answers backed by relevant complaint narratives
-- Filter and compare issues across different financial products
-- Identify trends and patterns in real-time
+```
+├── app.py                    # Gradio chatbot app entry point
+├── src/
+│   └── rag_complaint_analyzer/
+│        ... (modular pipeline, retriever, generator, etc.)
+├── data/
+│   └── raw/complaint_embeddings.parquet
+├── reports/
+│   ├── interim_report.md
+│   └── images/               # EDA and UI screenshots
+├── requirements.txt
+└── README.md
+```
 
 ---
 
-**Dataset**: Consumer Financial Protection Bureau (CFPB) Complaint Database
+## ⚡ Example Questions to Try
 
-- **Embedding Model**: sentence-transformers by SBERT
-- **Vector Database**: ChromaDB
+- Why are customers unhappy with Credit Cards?
+- What are the most common issues with Personal Loans?
+- Which companies have the highest volume of complaints?
+- What fraud-related complaints have been reported recently?
+- How do complaints about Money Transfers compare to Credit Cards?
 
 ---
 
-**Built with ❤️ for better customer insights**
+## 🛠️ Evaluation and Performance
+
+- The chatbot answers 10+ curated evaluation questions, with full source display for each.
+- Both qualitative and quantitative performance metrics can be generated (see `reports/evaluation_results.md`).
+
+---
+
+## 🙏 Acknowledgments
+
+- Based on the [Consumer Financial Protection Bureau (CFPB) Complaints Dataset](https://www.consumerfinance.gov/data-research/consumer-complaints/)
+- Major Python open-source projects: Gradio, ChromaDB, Sentence Transformers, HuggingFace, and more.
+
+---
+
+**Built with ❤️ by the CrediTrust AI Team.**
