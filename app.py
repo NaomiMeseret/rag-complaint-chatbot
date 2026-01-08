@@ -41,81 +41,50 @@ class ComplaintChatbot:
             logger.error(f"Failed to initialize chatbot: {e}")
             raise
     
-    def chat(self, question: str, history: list) -> tuple:
+    def chat(self, question: str, history: list) -> list:
         """
-        Process a user question and return response.
-        
-        Args:
-            question: User question
-            history: Chat history (not used, but required by Gradio)
-            
-        Returns:
-            Tuple of (answer_html, history)
+        Process a user question and return response compatible with Gradio Chatbot.
+        Returns a list of messages, each a dict with 'role' and 'content'.
         """
         if not question or not question.strip():
-            return "Please enter a question.", history
-        
+            if not history:
+                history = []
+            history = list(history)
+            history.append({"role": "user", "content": ""})
+            history.append({"role": "assistant", "content": "Please enter a question."})
+            return history
         try:
             logger.info(f"Processing question: {question}")
-            
-            # Query pipeline
             response = self.pipeline.query(question, return_sources=True)
-            
-            # Format answer with sources
             answer = response['answer']
             sources = response.get('sources', [])
-            
-            # Create HTML response with sources
-            html_response = f"""
-            <div style="padding: 10px;">
-                <h3 style="color: #2563eb; margin-bottom: 10px;">Answer:</h3>
-                <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">{answer}</p>
-                
-                <h3 style="color: #2563eb; margin-bottom: 10px; margin-top: 30px;">Sources:</h3>
-                <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin-top: 10px;">
-            """
-            
+            # Format answer plus sources info inline
+            html_response = f"<b>Answer:</b><br>{answer}<br><br><b>Sources:</b>"
             for i, source in enumerate(sources, 1):
                 metadata = source['metadata']
                 similarity = source['similarity']
                 document = source['document']
-                
-                # Truncate document if too long
                 doc_preview = document[:300] + "..." if len(document) > 300 else document
-                
-                html_response += f"""
-                    <div style="margin-bottom: 20px; padding: 10px; background-color: white; border-left: 4px solid #2563eb; border-radius: 4px;">
-                        <h4 style="color: #1f2937; margin-bottom: 8px;">Source {i} (Similarity: {similarity:.3f})</h4>
-                        <p style="margin: 5px 0;"><strong>Product:</strong> {metadata.get('product', 'N/A')}</p>
-                        <p style="margin: 5px 0;"><strong>Issue:</strong> {metadata.get('issue', 'N/A')}</p>
-                        <p style="margin: 5px 0;"><strong>Company:</strong> {metadata.get('company', 'N/A')}</p>
-                        <p style="margin: 5px 0;"><strong>Date:</strong> {metadata.get('date_received', 'N/A')}</p>
-                        <p style="margin-top: 10px; padding: 10px; background-color: #f9fafb; border-radius: 4px; font-size: 14px;">
-                            <strong>Excerpt:</strong> {doc_preview}
-                        </p>
-                    </div>
-                """
-            
-            html_response += """
-                </div>
-            </div>
-            """
-            
-            # Update history
-            history.append((question, html_response))
-            
+                html_response += f'<br><span style="font-size:13px;"><b>Source {i} (Similarity: {similarity:.3f})</b> | Product: {metadata.get('product', 'N/A')} | Issue: {metadata.get('issue', 'N/A')} | Company: {metadata.get('company', 'N/A')} | Date: {metadata.get('date_received', 'N/A')}<br><i>Excerpt:</i> {doc_preview}</span>'
+            if not history:
+                history = []
+            history = list(history)
+            history.append({"role": "user", "content": question})
+            history.append({"role": "assistant", "content": html_response})
             logger.info("Question processed successfully")
-            return "", history
-            
+            return history
         except Exception as e:
             error_msg = f"Error processing question: {str(e)}"
             logger.error(error_msg, exc_info=True)
-            history.append((question, f"<p style='color: red;'>{error_msg}</p>"))
-            return "", history
+            if not history:
+                history = []
+            history.append({"role": "user", "content": question})
+            history.append({"role": "assistant", "content": f"<p style='color: red;'>{error_msg}</p>"})
+            return history
     
-    def clear_history(self) -> tuple:
-        """Clear chat history."""
-        return [], ""
+    def clear_history(self):
+        """Clear chat history for Gradio Chatbot markdown mode."""
+        return []
     
     def create_interface(self):
         """Create Gradio interface."""
@@ -147,9 +116,7 @@ class ComplaintChatbot:
             chatbot = gr.Chatbot(
                 label="Conversation",
                 height=600,
-                show_label=True,
-                avatar_images=(None, "🤖"),
-                bubble_full_width=False
+                show_label=True
             )
             
             question_input = gr.Textbox(
@@ -166,18 +133,16 @@ class ComplaintChatbot:
             question_input.submit(
                 fn=self.chat,
                 inputs=[question_input, chatbot],
-                outputs=[question_input, chatbot]
+                outputs=chatbot
             )
-            
             ask_button.click(
                 fn=self.chat,
                 inputs=[question_input, chatbot],
-                outputs=[question_input, chatbot]
+                outputs=chatbot
             )
-            
             clear_button.click(
                 fn=self.clear_history,
-                outputs=[chatbot, question_input]
+                outputs=chatbot
             )
             
             gr.Markdown(
